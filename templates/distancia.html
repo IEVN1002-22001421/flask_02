@@ -1,0 +1,51 @@
+{% extends "layout.html"%}
+    {% block container %}
+            
+            <h1>Hola mundo</h1>
+    <h2>{{ titulo }}</h2>
+
+    {% for elemento in listado %}
+        <p>{{elemento}}</p>
+    {% endfor %}
+
+    {% if usuario %}
+        <p>usuario: {{titulo}}</p>
+    {% else %}
+        <h3>No hay usuario</h3>
+    {% endif %}
+       
+{% endblock %}
+
+{% extends "layout.html"%}
+    {% block container %}
+    {% import "_macros.html" as datos_macro %}
+
+    <h1>Opera Bas</h1>
+
+
+    <form action="" method="post">
+
+        {{ datos_macro.datos('numero1', 'Ingrese el numero 1') }}
+        {{ datos_macro.datos('numero2', 'Ingrese el numero 2') }}
+
+        <div class="mb-3">
+            <label for="operacion" class="form-label">operacion</label>
+            <select class="form-select" name="operacion" id="operacion">
+                <option value="suma">Suma</option>
+                <option value="resta">Resta</option>
+                <option value="multiplicacion">Multiplicacion</option>
+                <option value="division">Division</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Calcular</button>
+
+
+
+
+
+    </form>
+
+    <h1>Suma de {{numero1}} + {{numero2}} = {{res}}</h1>
+    
+{% endblock %}

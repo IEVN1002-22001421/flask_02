@@ -1,0 +1,143 @@
+{% extends "layout.html" %}
+
+{% block container %}
+<form method="POST" action="/pizzeria" style="background-color:white; padding:15px;">
+
+    {% if confirmacion %}
+    <div style="background-color:lightgreen; padding:10px; text-align:center; border:2px solid green; margin-bottom:15px;">
+        <strong style="font-size:16px;">{{ confirmacion }}</strong>
+    </div>
+    {% endif %}
+
+    <div style="border:2px solid black; padding:15px; margin-bottom:15px;">
+        <table style="width:100%;">
+            <tr>
+                <td style="width:33%;"><strong>Nombre:</strong><br>
+                    {{ form.nombre(style="width:90%; margin-top:5px; padding:8px; border:1px solid black;") }}
+                </td>
+                <td style="width:33%;"><strong>Dirección:</strong><br>
+                    {{ form.direccion(style="width:90%; margin-top:5px; padding:8px; border:1px solid black;") }}
+                </td>
+                <td style="width:33%;"><strong>Teléfono:</strong><br>
+                    {{ form.telefono(style="width:90%; margin-top:5px; padding:8px; border:1px solid black;") }}
+                </td>
+            </tr>
+        </table>
+
+        <table style="width:100%; margin-top:20px;">
+            <tr>
+                <td style="width:30%; vertical-align:top;">
+                    <div style="border:2px solid black; padding:10px; background-color:white;">
+                        <h4 style="margin:0 0 10px 0; text-align:center;"><strong>Tamaño Pizza</strong></h4>
+                        {% for subfield in form.tamanio %}
+                        <div style="margin-bottom:5px;">
+                            {{ subfield(type="radio") }} 
+                            {{ subfield.label }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </td>
+
+                <td style="width:5%;"></td>
+
+                <td style="width:30%; vertical-align:top;">
+                    <div style="border:2px solid black; padding:10px; background-color:white;">
+                        <h4 style="margin:0 0 10px 0; text-align:center;"><strong>Ingredientes</strong></h4>
+                        {% for subfield in form.ingredientes %}
+                            <div style="margin-bottom:5px;">
+                                {{ subfield(type="radio") }} 
+                                {{ subfield.label }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </td>
+
+                <td style="width:25%; vertical-align:top; text-align:center;">
+                    <div style="border:2px solid black; padding:15px; background-color:white;">
+                        <h4 style="margin:0 0 15px 0;"><strong>Num. de Pizzas</strong></h4>
+                        {{ form.num_pizzas(value="1", min="1", style="width:80px; text-align:center; padding:8px; border:1px solid black; font-size:16px; margin-bottom:15px;") }}
+                        <br>
+                        {{ form.btn_agregar(style="padding:8px 20px; background-color:black; color:white; border:1px solid black; cursor:pointer;", value="Agregar") }}
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div style="border:2px solid black; padding:15px;">
+        <table style="width:100%;">
+            <tr>
+                <td style="width:65%; vertical-align:top; padding-right:20px;">
+                    <table border="2" cellpadding="8" cellspacing="0" style="width:100%; background-color:white; border:2px solid black;">
+                        <thead style="background-color:black; color:white;">
+                            <tr>
+                                <th style="padding:10px; border:1px solid white;">Tamaño</th>
+                                <th style="padding:10px; border:1px solid white;">Ingredientes</th>
+                                <th style="padding:10px; border:10px solid white;">Num. Pizzas</th>
+                                <th style="padding:10px; border:1px solid white;">Sub Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pizza in detalle %}
+                            <tr>
+                                <td style="padding:8px; border:1px solid black; text-align:center;">{{ pizza.tamanio }}</td>
+                                <td style="padding:8px; border:1px solid black; text-align:center;">{{ pizza.ingredientes }}</td>
+                                <td style="padding:8px; border:1px solid black; text-align:center;">{{ pizza.num_pizzas }}</td>
+                                <td style="padding:8px; border:1px solid black; text-align:center;">${{ "%.2f"|format(pizza.subtotal) }}</td>
+                            </tr>
+                            {% endfor %}
+                            
+                            {% if not detalle %}
+                            <tr>
+                                <td colspan="4" style="padding:20px; text-align:center; border:1px solid black;">
+                                    No hay pizzas en el pedido
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+
+                    <div style="margin-top:15px; text-align:right;">
+                        <h3 style="margin:0 0 15px 0;">Total del Pedido: ${{ "%.2f"|format(total_pedido_actual) }}</h3>
+                        {{ form.btn_quitar(style="padding:8px 20px; margin-right:10px; background-color:white; color:black; border:2px solid black; cursor:pointer;", value="Quitar") }}
+                        {{ form.btn_terminar(style="padding:8px 20px; background-color:black; color:white; border:2px solid black; cursor:pointer;", value="Terminar") }}
+                    </div>
+                </td>
+                
+                <td style="width:35%; vertical-align:top;">
+                    <div style="border:2px solid black; padding:15px; background-color:white;">
+                        <h4 style="margin:0 0 15px 0; text-align:center;"><strong>Ventas del día</strong></h4>
+                        
+                        <div style="max-height:200px; overflow-y:auto; margin-bottom:15px;">
+                            {% set total_dia = 0 %}
+                            {% for venta in ventas %}
+                            <div style="margin-bottom:10px; padding:5px; border-bottom:1px solid #ccc;">
+                                <strong>{{ venta.nombre }}</strong> total ${{ "%.2f"|format(venta.total) }}
+                            </div>
+                            {% set total_dia = total_dia + (venta.total | float) %}
+                            {% else %}
+                            <div style="text-align:center; color:#666; padding:10px;">
+                                No hay ventas registradas
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div style="border-top:2px solid black; padding-top:10px; text-align:center;">
+                            <h4 style="margin:0;">
+                                Ventas totales del día: ${{ "%.2f"|format(total_dia) }}
+                            </h4>
+                        </div>
+                    </div>
+
+                    <div style="text-align:center; margin-top:15px;">
+                        <a href="/ventas_totales" 
+                           style="display:inline-block; padding:8px 20px; background-color:white; color:black; border:2px solid black; text-decoration:none;">
+                            Ventas totales por día
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</form>
+{% endblock %}
